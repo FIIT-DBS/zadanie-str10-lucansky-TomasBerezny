@@ -1,0 +1,1 @@
+web: gunicorn zadanie2django.wsgi
