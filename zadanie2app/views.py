@@ -70,3 +70,45 @@ and matches.start_time < patches_new.patch_end_date""")
         
 
     return JsonResponse(json, safe = False)
+
+
+def endpoint1(request, player_id):
+    cursor.execute("""SELECT
+players.id as id,
+COALESCE(players.nick, 'unknown') as player_nick,
+heroes.localized_name as hero_localized_name,
+CAST(CAST(matches.duration as DECIMAL)/60 as DECIMAL(7,2)) as match_duration_minutes,
+(xp_hero+xp_creep+COALESCE(xp_other,0)+COALESCE(xp_roshan,0)) as experience_gained,
+mpd.level as level_gained,
+CASE
+WHEN player_slot < 5 and radiant_win = True THEN True
+WHEN player_slot > 127 and radiant_win = False THEN True
+ELSE False
+END as winner,
+matches.id as match_id
+FROM players
+INNER JOIN matches_players_details as mpd on players.id = mpd.player_id
+INNER JOIN matches on mpd.match_id = matches.id
+INNER JOIN heroes on mpd.hero_id = heroes.id
+WHERE players.id = """+player_id)
+    response = cursor.fetchall()
+
+    json = {}
+
+    i = 0
+    for res in response:
+        player = {'id': res[0], 'player_nick': res[1], 'matches': []}
+        match = {'hero_localized_name': res[2], 'match_duration_minutes': res[3], 'experience_gained': res[4], 'level_gained': res[5],
+        'winner': res[6], 'match_id': res[7]}
+        if match != None:
+            player['matches'].append(match)
+        
+        if len(json) == 0:
+            json = player
+        else:
+            if match != None:
+                json['matches'].append(match)
+        
+        
+
+    return JsonResponse(json, safe = False)
