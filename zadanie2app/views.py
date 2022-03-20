@@ -31,3 +31,6 @@ def say_hello(request):
     json['pgsql'] = responses
 
     return JsonResponse(json, safe = False)
+
+def endpoint2(request):
+    return JsonResponse('dadad')
