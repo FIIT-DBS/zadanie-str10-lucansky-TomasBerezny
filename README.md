@@ -94,8 +94,7 @@ SELECT DISTINCT ON (hero_id) hero_id AS hero_id, hero_localized_name AS hero_nam
 SELECT hero_id, hero_localized_name, ROW_NUMBER() OVER (PARTITION BY difference, hero_localized_name, match_id ORDER BY match_id,time) streak FROM(
 SELECT ROW_NUMBER() OVER (PARTITION BY match_id ORDER BY match_id, time) roww,
 	ROW_NUMBER() OVER (PARTITION BY hero_id, match_id ORDER BY match_id, time) heroo,
-	(ROW_NUMBER() OVER (PARTITION BY match_id ORDER BY match_id, time) - ROW_NUMBER() OVER (PARTITION by hero_id ORDER BY match_id, time))difference,
-* FROM (
+	(ROW_NUMBER() OVER (PARTITION BY match_id ORDER BY match_id, time) - ROW_NUMBER() OVER (PARTITION by hero_id ORDER BY match_id, time))difference,* FROM (
 SELECT matches.id AS match_id, heroes.id AS hero_id, heroes.localized_name AS hero_localized_name, time
 FROM game_objectives game_o
 JOIN matches_players_details mpd ON mpd.id = game_o.match_player_detail_id_1
